@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Will you be my Valentine?</title>
+  <title>Building Access Confirmation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@400;500&display=swap" rel="stylesheet">
@@ -227,6 +227,12 @@
       animation: introPulse 2s ease-in-out infinite;
     }
 
+    h1 .stethoscope {
+      font-size: 3rem;
+      margin: 1rem 0;
+      display: inline-block;
+    }
+
     .intro-overlay p {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.5rem;
@@ -250,9 +256,9 @@
 </head>
 <body>
   <div class="intro-overlay" id="intro-overlay">
-    <span class="stethoscope" aria-hidden="true">🩺</span>
-    <p>Ready when you are, Doc</p>
-    <span class="tap-hint">Click anywhere to continue</span>
+    <span class="stethoscope" aria-hidden="true">🔐</span>
+    <p>Building Access Confirmation</p>
+    <span class="tap-hint">Tap to verify and continue</span>
   </div>
 
   <div class="hearts">
@@ -264,7 +270,7 @@
   </div>
 
   <div class="container" id="question">
-    <h1>Will you be my Valentine?</h1>
+    <h1>Doc<br>Will you be my Valentine?<br><span class="stethoscope" aria-hidden="true">🩺</span></h1>
     <div class="buttons-wrapper">
       <button class="btn" id="yes-btn">Yes!</button>
       <div class="no-btn-zone" id="no-btn-zone">
@@ -386,16 +392,33 @@
     let lastMoveTime = 0;
     const moveCooldown = 400;
 
-    document.addEventListener('mousemove', (e) => {
+    const isMobile = window.matchMedia('(pointer: coarse)').matches ||
+                    !window.matchMedia('(hover: hover)').matches;
+
+    function getEventCoords(e) {
+      if (e.touches?.length) {
+        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+      return { x: e.clientX, y: e.clientY };
+    }
+
+    function checkZoneAndMove(e) {
+      const { x, y } = getEventCoords(e);
       const rect = noBtnZone.getBoundingClientRect();
-      const inZone = e.clientX >= rect.left && e.clientX <= rect.right &&
-                     e.clientY >= rect.top && e.clientY <= rect.bottom;
+      const inZone = x >= rect.left && x <= rect.right &&
+                     y >= rect.top && y <= rect.bottom;
 
       if (inZone && Date.now() - lastMoveTime > moveCooldown) {
         lastMoveTime = Date.now();
         moveNoButton();
       }
-    });
+    }
+
+    if (isMobile) {
+      document.addEventListener('touchstart', checkZoneAndMove, { passive: true });
+    } else {
+      document.addEventListener('mousemove', checkZoneAndMove);
+    }
 
     const yesSong = document.getElementById('yes-song');
 
