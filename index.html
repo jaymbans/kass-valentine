@@ -291,6 +291,12 @@
   <script>
     const introOverlay = document.getElementById('intro-overlay');
     introOverlay.addEventListener('click', () => {
+      if (window.speechSynthesis) {
+        const warmup = new SpeechSynthesisUtterance(' ');
+        warmup.volume = 0.01;
+        warmup.rate = 2;
+        window.speechSynthesis.speak(warmup);
+      }
       introOverlay.classList.add('hidden');
       setTimeout(() => introOverlay.remove(), 500);
     });
@@ -414,8 +420,24 @@
       }
     }
 
+    let lastTapInZone = false;
+
     if (isMobile) {
-      document.addEventListener('touchstart', checkZoneAndMove, { passive: true });
+      document.addEventListener('touchstart', (e) => {
+        if (e.touches?.length) {
+          const { x, y } = getEventCoords(e);
+          const rect = noBtnZone.getBoundingClientRect();
+          lastTapInZone = x >= rect.left && x <= rect.right &&
+                          y >= rect.top && y <= rect.bottom;
+        }
+      }, { passive: true });
+      document.addEventListener('touchend', (e) => {
+        if (lastTapInZone && Date.now() - lastMoveTime > moveCooldown) {
+          lastMoveTime = Date.now();
+          moveNoButton();
+        }
+        lastTapInZone = false;
+      }, { passive: true });
     } else {
       document.addEventListener('mousemove', checkZoneAndMove);
     }
