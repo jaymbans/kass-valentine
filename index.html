@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Will you be my Valentine?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a0a0e 0%, #2d1520 50%, #1a0a0e 100%);
+      font-family: 'Outfit', sans-serif;
+      color: #f5e6eb;
+      overflow-x: hidden;
+    }
+
+    .container {
+      text-align: center;
+      padding: 2rem;
+      max-width: 480px;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 600;
+      font-style: italic;
+      margin-bottom: 2.5rem;
+      line-height: 1.3;
+      text-shadow: 0 0 40px rgba(255, 182, 193, 0.2);
+    }
+
+    .buttons-wrapper {
+      position: relative;
+      width: 100%;
+      min-height: 120px;
+      height: 120px;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      position: absolute;
+      padding: 16px 36px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.15s ease-out, box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    #yes-btn {
+      left: 50%;
+      top: 50%;
+      transform: translate(-120%, -50%);
+      background: linear-gradient(135deg, #c94b6b 0%, #a83252 100%);
+      color: white;
+      box-shadow: 0 4px 20px rgba(201, 75, 107, 0.4);
+    }
+
+    #yes-btn:hover {
+      transform: translate(-120%, -50%) scale(1.05);
+      box-shadow: 0 6px 28px rgba(201, 75, 107, 0.5);
+    }
+
+    #yes-btn.big-yes {
+      transform: translate(-50%, -50%);
+      width: 90vw;
+      max-width: 800px;
+      font-size: clamp(2rem, 6vw, 4rem);
+      padding: 32px 48px;
+      box-shadow: 0 8px 40px rgba(201, 75, 107, 0.6);
+    }
+
+    #yes-btn.big-yes:hover {
+      transform: translate(-50%, -50%) scale(1.02);
+      box-shadow: 0 10px 48px rgba(201, 75, 107, 0.7);
+    }
+
+    .no-btn-zone.hidden {
+      display: none !important;
+    }
+
+    .no-btn-zone {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(20%, -50%);
+      padding: 100px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: left 0.25s ease-out, top 0.25s ease-out, transform 0.15s ease;
+    }
+
+    #no-btn {
+      position: static;
+      background: rgba(255, 255, 255, 0.1);
+      color: #e8b4bc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      pointer-events: none;
+    }
+
+    .hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 1.5rem;
+      opacity: 0.15;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .heart:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+    .heart:nth-child(2) { left: 85%; top: 30%; animation-delay: 2s; }
+    .heart:nth-child(3) { left: 25%; top: 70%; animation-delay: 4s; }
+    .heart:nth-child(4) { left: 75%; top: 60%; animation-delay: 1s; }
+    .heart:nth-child(5) { left: 50%; top: 15%; animation-delay: 3s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-20px) scale(1.1); }
+    }
+
+    .success {
+      display: none;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .success.show {
+      display: block;
+    }
+
+    .success h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-style: italic;
+      color: #ffb6c1;
+      margin-bottom: 0.5rem;
+    }
+
+    .success p {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .lyrics-display {
+      margin-top: 2rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      color: rgba(255, 182, 193, 0.9);
+      min-height: 4em;
+      line-height: 1.6;
+      transition: opacity 0.2s ease;
+    }
+
+    .cats-image {
+      display: none;
+      margin-top: 2rem;
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .cats-image.show {
+      display: block;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts">
+    <span class="heart">♥</span>
+    <span class="heart">♥</span>
+    <span class="heart">♥</span>
+    <span class="heart">♥</span>
+    <span class="heart">♥</span>
+  </div>
+
+  <div class="container" id="question">
+    <h1>Will you be my Valentine?</h1>
+    <div class="buttons-wrapper">
+      <button class="btn" id="yes-btn">Yes!</button>
+      <div class="no-btn-zone" id="no-btn-zone">
+        <button class="btn" id="no-btn">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container success" id="success">
+    <h2>I love you Kassidy! ♥</h2>
+    <p>Can't wait to celebrate with you! Doc!</p>
+    <div id="lyrics-display" class="lyrics-display"></div>
+    <img id="cats-img" class="cats-image" src="ritzandruby.png" alt="Ritz and Ruby">
+  </div>
+
+  <audio id="yes-song" src="man-i-need.mp3" preload="auto"></audio>
+
+  <script>
+    const noBtnZone = document.getElementById('no-btn-zone');
+    const noBtn = document.getElementById('no-btn');
+    const yesBtn = document.getElementById('yes-btn');
+    const questionEl = document.getElementById('question');
+    const successEl = document.getElementById('success');
+
+    const yesPadding = 25;
+
+    function getYesForbiddenZone() {
+      const yesRect = yesBtn.getBoundingClientRect();
+      return {
+        left: yesRect.left - yesPadding,
+        top: yesRect.top - yesPadding,
+        right: yesRect.right + yesPadding,
+        bottom: yesRect.bottom + yesPadding
+      };
+    }
+
+    function overlapsYes(newX, newY) {
+      const zone = getYesForbiddenZone();
+      const rect = noBtnZone.getBoundingClientRect();
+      const zoneWidth = rect.width;
+      const zoneHeight = rect.height;
+      const noRight = newX + zoneWidth;
+      const noBottom = newY + zoneHeight;
+      return newX < zone.right && noRight > zone.left &&
+             newY < zone.bottom && noBottom > zone.top;
+    }
+
+    const noPhrases = [
+      "No",
+      "Nice try",
+      "I was afraid you'd try that",
+      "Hey! What are you doing!",
+      "That's not very cash money of you!",
+      "Pretty please!",
+      "Come on Doctor Manning!",
+      "Kass please!",
+      "Sassidy!"
+    ];
+    let noPhraseIndex = 0;
+    let moveCount = 0;
+    let noChoiceTriggered = false;
+
+    function playNoSound(text) {
+      window.speechSynthesis?.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      window.speechSynthesis?.speak(utterance);
+    }
+
+    function moveNoButton() {
+      if (noChoiceTriggered) return;
+
+      if (moveCount >= 18) {
+        noChoiceTriggered = true;
+        playNoSound("You've given me no choice");
+        noBtnZone.classList.add('hidden');
+        yesBtn.classList.add('big-yes');
+        yesBtn.style.left = '50%';
+        yesBtn.style.transform = 'translate(-50%, -50%)';
+        return;
+      }
+
+      playNoSound(noPhrases[noPhraseIndex]);
+      noPhraseIndex = (noPhraseIndex + 1) % noPhrases.length;
+      moveCount++;
+      const zone = getYesForbiddenZone();
+      const rect = noBtnZone.getBoundingClientRect();
+      const zoneWidth = rect.width;
+      const zoneHeight = rect.height;
+      const maxX = window.innerWidth - zoneWidth - 20;
+      const maxY = window.innerHeight - zoneHeight - 20;
+      const minX = 20;
+      const minY = 20;
+
+      let newX, newY;
+      let attempts = 0;
+      do {
+        newX = Math.random() * (maxX - minX) + minX;
+        newY = Math.random() * (maxY - minY) + minY;
+        attempts++;
+      } while (overlapsYes(newX, newY) && attempts < 100);
+
+      if (overlapsYes(newX, newY)) {
+        newX = zone.right + 10 + Math.random() * Math.max(1, maxX - zone.right - 10);
+        newY = Math.random() * (maxY - minY) + minY;
+      }
+
+      noBtnZone.style.left = newX + 'px';
+      noBtnZone.style.top = newY + 'px';
+      noBtnZone.style.transform = 'translate(0, 0)';
+    }
+
+    let lastMoveTime = 0;
+    const moveCooldown = 400;
+
+    document.addEventListener('mousemove', (e) => {
+      const rect = noBtnZone.getBoundingClientRect();
+      const inZone = e.clientX >= rect.left && e.clientX <= rect.right &&
+                     e.clientY >= rect.top && e.clientY <= rect.bottom;
+
+      if (inZone && Date.now() - lastMoveTime > moveCooldown) {
+        lastMoveTime = Date.now();
+        moveNoButton();
+      }
+    });
+
+    const yesSong = document.getElementById('yes-song');
+
+    const chorusLyrics = `Tell me you got something to give, I want it. I kinda like it when you call me Wonderful. Whatever the type of talk it is, come on then. I gotta know you're meant to be the woman I need`;
+
+    yesBtn.addEventListener('click', () => {
+      questionEl.classList.add('hidden');
+      successEl.classList.add('show');
+      const lyricsDisplay = document.getElementById('lyrics-display');
+      lyricsDisplay.textContent = '';
+
+      window.speechSynthesis?.cancel();
+      const utterance = new SpeechSynthesisUtterance(chorusLyrics);
+      utterance.rate = 0.85;
+
+      utterance.onboundary = (event) => {
+        if (event.name === 'word' || event.name === 'sentence') {
+          const end = event.charIndex + event.charLength;
+          lyricsDisplay.textContent = chorusLyrics.substring(0, end);
+        }
+      };
+
+      utterance.onstart = () => {
+        lyricsDisplay.textContent = '';
+      };
+
+      utterance.onend = () => {
+        lyricsDisplay.textContent = chorusLyrics;
+        document.getElementById('cats-img').classList.add('show');
+      };
+
+      window.speechSynthesis?.speak(utterance);
+      yesSong.play().catch(() => {});
+      document.querySelectorAll('.heart').forEach(h => {
+        h.style.animation = 'none';
+        h.style.opacity = '0.3';
+      });
+    });
+  </script>
+</body>
+</html>
