@@ -202,9 +202,59 @@
     .hidden {
       display: none !important;
     }
+
+    .intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a0a0e 0%, #2d1520 50%, #1a0a0e 100%);
+      cursor: pointer;
+      transition: opacity 0.4s ease;
+    }
+
+    .intro-overlay.hidden {
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .stethoscope {
+      font-size: 6rem;
+      margin-bottom: 1.5rem;
+      animation: introPulse 2s ease-in-out infinite;
+    }
+
+    .intro-overlay p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-style: italic;
+      color: #f5e6eb;
+      opacity: 0.95;
+    }
+
+    .intro-overlay .tap-hint {
+      margin-top: 1rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    @keyframes introPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
   </style>
 </head>
 <body>
+  <div class="intro-overlay" id="intro-overlay">
+    <span class="stethoscope" aria-hidden="true">🩺</span>
+    <p>Ready when you are, Doc</p>
+    <span class="tap-hint">Click anywhere to continue</span>
+  </div>
+
   <div class="hearts">
     <span class="heart">♥</span>
     <span class="heart">♥</span>
@@ -233,6 +283,12 @@
   <audio id="yes-song" src="man-i-need.mp3" preload="auto"></audio>
 
   <script>
+    const introOverlay = document.getElementById('intro-overlay');
+    introOverlay.addEventListener('click', () => {
+      introOverlay.classList.add('hidden');
+      setTimeout(() => introOverlay.remove(), 500);
+    });
+
     const noBtnZone = document.getElementById('no-btn-zone');
     const noBtn = document.getElementById('no-btn');
     const yesBtn = document.getElementById('yes-btn');
